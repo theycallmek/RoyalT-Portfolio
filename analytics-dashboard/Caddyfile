@@ -1,0 +1,20 @@
+# Same origin for the page and GoatCounter's API, so no CORS. Published on the Tailscale IP only.
+:80 {
+  encode zstd gzip
+  header {
+    X-Content-Type-Options nosniff
+    Referrer-Policy no-referrer
+    # Babel compiles the page's JSX in the browser: needs 'unsafe-eval'. connect-src 'self' keeps the
+    # API key from being sent anywhere but this origin.
+    Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+  }
+
+  handle /api/* {
+    reverse_proxy goatcounter:8080
+  }
+
+  handle {
+    root * /srv
+    file_server
+  }
+}

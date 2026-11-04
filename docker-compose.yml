@@ -28,6 +28,12 @@ services:
     ports: ["${INGEST_BIND:-127.0.0.1}:8790:8080"]
     volumes: [goatcounter-data:/home/goatcounter/goatcounter-data]
     restart: unless-stopped
+  # Nicer GoatCounter dashboard (analytics-dashboard/), tailnet only: http://<tailscale-ip>:8791
+  analytics-dashboard:
+    build: analytics-dashboard
+    ports: ["${INGEST_BIND:-127.0.0.1}:8791:80"]
+    depends_on: [goatcounter]
+    restart: unless-stopped
   # Cloudflare Tunnel for the public domain: outbound-only connection, no published ports.
   # Enabled with COMPOSE_PROFILES=tunnel and CLOUDFLARE_TUNNEL_TOKEN in .env (docs/DEPLOY.md).
   cloudflared:
