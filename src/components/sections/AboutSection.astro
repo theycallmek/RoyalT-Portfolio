@@ -31,7 +31,7 @@ const tech = [
   <Grid cols={1}>
     {tech.map(([area, tools]) => (
       <Cell class="flex flex-col gap-1 sm:flex-row sm:gap-6">
-        <span class="label flex w-44 shrink-0 items-center gap-2 self-start pt-1"><span class="text-xl leading-none"><MetricIcon label={area} /></span>{area}</span>
+        <span class="label flex w-44 shrink-0 items-center gap-3 self-start"><span class="text-3xl leading-none"><MetricIcon label={area} /></span>{area}</span>
         <span>{tools}</span>
       </Cell>
     ))}
