@@ -1,5 +1,6 @@
-# Plain HTTP: TLS is terminated in front of this container by Cloudflare (royalt.online, via the
-# cloudflared tunnel) or Tailscale Funnel (backup *.ts.net address).
+# Plain HTTP: TLS is terminated in front of this container by Cloudflare (via the cloudflared tunnel)
+# or Tailscale Funnel (backup *.ts.net address). royalt.online itself is served by a Cloudflare Worker;
+# the tunnel carries count.royalt.online (analytics) and www (redirect).
 :80 {
   # www -> apex, one canonical address
   @www host www.royalt.online
@@ -10,18 +11,24 @@
     X-Content-Type-Options nosniff
     Referrer-Policy strict-origin-when-cross-origin
     X-Frame-Options DENY
-    Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://i.ytimg.com; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+    Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://count.royalt.online; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://i.ytimg.com https://count.royalt.online; font-src 'self'; connect-src 'self' https://count.royalt.online; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+  }
+
+  # GoatCounter: count.royalt.online serves only the counter; its dashboard is published on the
+  # Tailscale IP only (docker-compose.yml). It reads the visitor IP from CF-Connecting-IP.
+  @count host count.royalt.online
+  handle @count {
+    @counter path /count /count.js
+    handle @counter {
+      reverse_proxy goatcounter:8080
+    }
+    handle {
+      respond 404
+    }
   }
 
   handle /api/* {
     reverse_proxy stats:8787
-  }
-
-  # GoatCounter: only the counter is public; its dashboard is published on the Tailscale IP only
-  # (docker-compose.yml). It reads the visitor IP from CF-Connecting-IP / X-Forwarded-For.
-  @goatcounter path /count /count.js
-  handle @goatcounter {
-    reverse_proxy goatcounter:8080
   }
 
   handle {

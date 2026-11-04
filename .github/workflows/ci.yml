@@ -14,3 +14,24 @@ jobs:
       - run: npm test
       - run: npm run build
       - run: npm run test:e2e
+  # royalt.online is served by a Cloudflare Worker (wrangler.jsonc, docs/DEPLOY.md section 13).
+  deploy:
+    needs: verify
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    concurrency: deploy
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version-file: .node-version, cache: npm }
+      - run: npm ci
+      - run: npm run build
+        env: { SITE_URL: "https://royalt.online" }
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          wranglerVersion: "4.157.0"
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          secrets: STATS_PUSH_TOKEN
+        env:
+          STATS_PUSH_TOKEN: ${{ secrets.STATS_PUSH_TOKEN }}

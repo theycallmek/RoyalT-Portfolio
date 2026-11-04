@@ -58,8 +58,8 @@ const jsonLd = {
     <link rel="preload" as="font" type="font/woff2" href={mono700} crossorigin />
     {Astro.site?.protocol === "https:" && (
       <>
-        {/* GoatCounter (self-hosted; Caddy proxies only /count and /count.js, the dashboard is tailnet-only) */}
-        <script is:inline data-goatcounter="/count" async src="/count.js"></script>
+        {/* GoatCounter on the home server via count.<domain> (the site itself is on Cloudflare; dashboard tailnet-only) */}
+        <script is:inline data-goatcounter={`https://count.${Astro.site.hostname}/count`} async src={`https://count.${Astro.site.hostname}/count.js`}></script>
         {/* count.js counts the first load; View Transition navigations need an explicit count */}
         <script is:inline>document.addEventListener("astro:after-swap", () => window.goatcounter?.count?.());</script>
       </>

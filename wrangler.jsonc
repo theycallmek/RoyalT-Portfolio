@@ -1,0 +1,18 @@
+// Cloudflare Worker for royalt.online (docs/DEPLOY.md section 13). Deployed by CI on pushes to main.
+{
+  "name": "royalt-online",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page",
+    // Only the stats API runs code; every other request is a static file (free, no Worker invocation).
+    "run_worker_first": ["/api/*"]
+  },
+  "d1_databases": [
+    { "binding": "DB", "database_name": "royalt-stats", "database_id": "REPLACE_WITH_D1_DATABASE_ID" }
+  ],
+  "workers_dev": true,
+  "preview_urls": false,
+  "observability": { "enabled": true }
+}

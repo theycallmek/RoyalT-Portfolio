@@ -218,3 +218,17 @@ The `goatcounter` service counts page views without cookies (no consent banner).
 3. **Don't count yourself:** in the dashboard, Settings → "Ignore IPs" (your home IP), or open `https://royalt.online/#toggle-goatcounter` once in each of your browsers.
 4. **Backups:** the data is the `goatcounter-data` volume (SQLite). `docker compose down -v` deletes it.
 5. **Nicer dashboard (optional):** the `analytics-dashboard` service serves [goatcounter-dashboard](https://github.com/abhishekhsingh/goatcounter-dashboard) (MIT, pinned commit; its scripts are downloaded at build time with checksums and served locally) on `http://<server-tailscale-name>:8791`, tailnet only. In GoatCounter (port 8790): your name → Settings → API → **Create key** with only **Read statistics** checked. In the dashboard enter `http://<server-tailscale-name>:8791` as the GoatCounter URL (the same address you opened; it proxies `/api/` to GoatCounter) and paste the key. The key stays in that browser's local storage.
+
+## 13. royalt.online on Cloudflare Workers (survives a home outage)
+
+The public site is served by a Cloudflare Worker (`wrangler.jsonc`, `worker/`): the pages come from Workers Static Assets, and `/api/stats` comes from a D1 database that the home stats service pushes to every minute (outbound only). If the home server is down, the site still loads with the last stats; homelab machines show offline after 3 minutes. Analytics go to `count.royalt.online` (tunnel → Caddy → GoatCounter, `/count` and `/count.js` only). GitHub Actions deploys the Worker on every push to `main`. The home server keeps serving its own copy on the Tailscale Funnel address.
+
+One-time setup:
+1. **D1 database:** Cloudflare dashboard → Storage & databases → D1 → Create → name `royalt-stats`. Put its ID in `wrangler.jsonc` (`database_id`).
+2. **API token:** My Profile → API Tokens → Create token → template "Edit Cloudflare Workers"; add the permission Account → D1 → Edit; zone resources: `royalt.online`.
+3. **Push token:** on the server, `openssl rand -hex 32`.
+4. **GitHub secrets** (repo → Settings → Secrets and variables → Actions): `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` (dashboard → Workers & Pages, right column), `STATS_PUSH_TOKEN` (step 3).
+5. **Server `.env`:** `STATS_PUSH_URL=https://royalt-online.<your-subdomain>.workers.dev/api/stats` and `STATS_PUSH_TOKEN=` (step 3), then `sudo docker compose up -d --build`.
+6. **Tunnel:** add the public hostname `count.royalt.online` → `http://web:80`.
+7. **Cutover:** in the tunnel, delete the `royalt.online` public hostname; then Workers & Pages → `royalt-online` → Settings → Domains & Routes → Add → Custom domain `royalt.online`.
+8. **www:** Rules → Redirect Rules → template "Redirect from WWW to root" (301, keep the query string), so www works during an outage too.

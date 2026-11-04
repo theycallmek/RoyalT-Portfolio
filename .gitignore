@@ -19,3 +19,5 @@ makerworld-sample*.html
 
 # Private working notes (handoff, plans, specs): kept locally, never pushed
 docs/superpowers/
+.wrangler/
+.dev.vars

@@ -7,6 +7,8 @@ services:
       GITHUB_USER: ${GITHUB_USER:-theycallmek}
       GITHUB_TOKEN: ${GITHUB_TOKEN:-}
       HOMELAB_NODES: ${HOMELAB_NODES:-}
+      STATS_PUSH_URL: ${STATS_PUSH_URL:-}
+      STATS_PUSH_TOKEN: ${STATS_PUSH_TOKEN:-}
     # Homelab agents POST /ingest here (never proxied by Caddy). On the server INGEST_BIND is its
     # Tailscale IPv4, so only tailnet peers can reach it.
     ports: ["${INGEST_BIND:-127.0.0.1}:8788:8788"]
