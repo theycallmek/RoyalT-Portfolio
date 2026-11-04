@@ -46,7 +46,8 @@ npm install
 npm run dev          # site on http://localhost:4321
 npm run stats        # stats service on :8787 (reads .env for the YouTube API key)
 npm test             # unit tests
-npm run test:e2e     # Playwright + axe
+npm run test:e2e     # Playwright + axe (Chromium)
+npm run test:browsers  # same, in Chromium, Firefox, WebKit, Pixel 7 and iPhone 15
 npm run lint         # Biome
 ```
 

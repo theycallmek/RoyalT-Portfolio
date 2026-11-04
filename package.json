@@ -14,7 +14,8 @@
     "format": "biome format --write .",
     "typecheck": "astro check",
     "test": "vitest run",
-    "test:e2e": "playwright test",
+    "test:e2e": "playwright test --project=chromium",
+    "test:browsers": "playwright test --retries=1",
     "stats": "node --env-file-if-exists=.env server/index.ts",
     "makerworld:import": "node scripts/makerworld-import.ts",
     "homelab:token": "node scripts/homelab-token.ts"

@@ -23,7 +23,9 @@ test("defaults: dark system gives dark", async ({ browser }) => {
 
 test("hover devices: swatches are hidden until the controls are hovered", async ({
   page,
+  isMobile,
 }) => {
+  test.skip(isMobile, "hover/keyboard UI; touch devices have their own test");
   await page.goto("/");
   // collapsed = zero-width group (the clipped swatches inside still have a box)
   const group = page.getByRole("radiogroup", { name: "Accent color" });
@@ -35,7 +37,9 @@ test("hover devices: swatches are hidden until the controls are hovered", async 
 
 test("mode toggle and accent persist across reload and navigation", async ({
   page,
+  isMobile,
 }) => {
+  test.skip(isMobile, "hover/keyboard UI; touch devices have their own test");
   await page.emulateMedia({ colorScheme: "dark" });
   await page.goto("/");
   // client:idle island: a click before hydration is lost
@@ -58,7 +62,9 @@ test("mode toggle and accent persist across reload and navigation", async ({
 
 test("accent radiogroup is reachable by Tab and supports arrow keys", async ({
   page,
+  isMobile,
 }) => {
+  test.skip(isMobile, "hover/keyboard UI; touch devices have their own test");
   await page.goto("/");
   // client:idle island: wait for hydration (Astro drops the ssr attribute) before using the keyboard
   await page.locator("astro-island:not([ssr]) [role=radiogroup]").waitFor({

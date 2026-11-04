@@ -29,6 +29,9 @@ for (const [from, id] of [
   ["links", "about"],
 ]) {
   test(`old /${from} URL lands on the ${id} section`, async ({ page }) => {
+    // hold the stats request: no stats server here, and the "unavailable" state is shorter than
+    // the skeleton, which would move the section after the anchor jump
+    await page.route("**/api/stats", () => {});
     await page.goto(`/${from}`);
     await expect(page).toHaveURL(new RegExp(`/#${id}$`));
     await expect(page.locator(`section#${id}`)).toBeInViewport();
@@ -36,6 +39,7 @@ for (const [from, id] of [
 }
 
 test("clicking the write nav link marks it current", async ({ page }) => {
+  await page.route("**/api/stats", () => {}); // see above
   await page.goto("/");
   const write = page
     .getByRole("navigation", { name: "Main" })
