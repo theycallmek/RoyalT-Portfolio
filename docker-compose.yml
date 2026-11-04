@@ -22,10 +22,10 @@ services:
     depends_on: [stats, goatcounter]
     restart: unless-stopped
   # Private analytics. Caddy proxies only /count and /count.js to it; the dashboard is published on
-  # INGEST_BIND (the Tailscale IP), so only tailnet devices can open it: http://<tailscale-ip>:8081
+  # INGEST_BIND (the Tailscale IP), so only tailnet devices can open it: http://<tailscale-ip>:8790
   goatcounter:
     image: arp242/goatcounter:2.7.0
-    ports: ["${INGEST_BIND:-127.0.0.1}:8081:8080"]
+    ports: ["${INGEST_BIND:-127.0.0.1}:8790:8080"]
     volumes: [goatcounter-data:/home/goatcounter/goatcounter-data]
     restart: unless-stopped
   # Cloudflare Tunnel for the public domain: outbound-only connection, no published ports.

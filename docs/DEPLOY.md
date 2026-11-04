@@ -214,6 +214,6 @@ Tailscale Funnel only serves `*.ts.net` names, so the public domain goes through
 The `goatcounter` service counts page views without cookies (no consent banner). Caddy makes only `/count` and `/count.js` public; the dashboard is published on `INGEST_BIND` (the server's Tailscale IP, as for the homelab ingest), so only devices on your tailnet can open it. The tracking script is included only in builds with an `https://` `SITE_URL`. Visitor countries come from Cloudflare's `CF-Connecting-IP` header; GoatCounter stores no IP addresses.
 
 1. **Start it:** `sudo docker compose up -d --build` (the same command as an update).
-2. **Create your account** from a device on your tailnet: open `http://<server-tailscale-ip>:8081` (or `http://<server-tailscale-name>:8081`) and complete the setup form (site domain `royalt.online`, your email and a password). Until this is done `/count.js` redirects to the setup form and nothing is counted.
+2. **Create your account** from a device on your tailnet: open `http://<server-tailscale-ip>:8790` (or `http://<server-tailscale-name>:8790`) and complete the setup form (site domain `royalt.online`, your email and a password). Until this is done `/count.js` redirects to the setup form and nothing is counted.
 3. **Don't count yourself:** in the dashboard, Settings → "Ignore IPs" (your home IP), or open `https://royalt.online/#toggle-goatcounter` once in each of your browsers.
 4. **Backups:** the data is the `goatcounter-data` volume (SQLite). `docker compose down -v` deletes it.
