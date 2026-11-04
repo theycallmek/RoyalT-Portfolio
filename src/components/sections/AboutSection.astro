@@ -27,7 +27,8 @@ const tech = [
       home servers.
     </p>
   </div>
-  <Grid cols={1} label="Tech I work with">
+  <SubHeader id="tech" title="Tech I work with" />
+  <Grid cols={1}>
     {tech.map(([area, tools]) => (
       <Cell class="flex flex-col gap-1 sm:flex-row sm:gap-6">
         <span class="label w-44 shrink-0 pt-0.5">{area}</span>
