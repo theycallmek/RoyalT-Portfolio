@@ -1,0 +1,6 @@
+---
+import { paletteText } from "../../lib/palette";
+interface Props { id: string; n: number; title: string }
+const { id, n, title } = Astro.props;
+---
+<h2 id={`${id}-title`} class="display text-3xl sm:text-5xl mb-6"><span class="label align-middle mr-3" style={`color: ${paletteText(n)}`}>{String(n).padStart(2, "0")} /</span>{title}</h2>

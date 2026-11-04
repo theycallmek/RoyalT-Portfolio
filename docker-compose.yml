@@ -1,0 +1,35 @@
+services:
+  stats:
+    build: { context: ., dockerfile: Dockerfile.stats }
+    environment:
+      YOUTUBE_API_KEY: ${YOUTUBE_API_KEY:-}
+      YOUTUBE_CHANNEL_ID: ${YOUTUBE_CHANNEL_ID:-}
+      GITHUB_USER: ${GITHUB_USER:-theycallmek}
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      HOMELAB_NODES: ${HOMELAB_NODES:-}
+    # Homelab agents POST /ingest here (never proxied by Caddy). On the server INGEST_BIND is its
+    # Tailscale IPv4, so only tailnet peers can reach it.
+    ports: ["${INGEST_BIND:-127.0.0.1}:8788:8788"]
+    volumes: [stats-data:/data]
+    restart: unless-stopped
+  web:
+    build:
+      context: .
+      args: { SITE_URL: "${SITE_URL:-http://localhost:8085}" }
+    # Localhost only: Tailscale Funnel (backup address) publishes it; the Cloudflare tunnel reaches
+    # it over the compose network as http://web:80.
+    ports: ["127.0.0.1:${WEB_PORT:-8080}:80"]
+    depends_on: [stats]
+    restart: unless-stopped
+  # Cloudflare Tunnel for the public domain: outbound-only connection, no published ports.
+  # Enabled with COMPOSE_PROFILES=tunnel and CLOUDFLARE_TUNNEL_TOKEN in .env (docs/DEPLOY.md).
+  cloudflared:
+    image: cloudflare/cloudflared:2026.10.7
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN:-}
+    depends_on: [web]
+    restart: unless-stopped
+    profiles: [tunnel]
+volumes:
+  stats-data:

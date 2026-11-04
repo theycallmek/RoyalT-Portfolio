@@ -1,0 +1,45 @@
+---
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import { getCollection } from "astro:content";
+import Grid from "../ui/Grid.astro";
+import Row from "../ui/Row.astro";
+import SectionHeader from "../ui/SectionHeader.astro";
+
+const posts = (await getCollection("posts", (p) => !p.data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+// post thumbnails are local files (src/assets/posts/<name>.webp), named in the post's `image` field
+const thumbs = import.meta.glob<{ default: ImageMetadata }>("../../assets/posts/*.webp", { eager: true });
+const thumb = (file?: string) => (file ? thumbs[`../../assets/posts/${file}`]?.default : undefined);
+---
+<section id="write" aria-labelledby="write-title" class="scroll-mt-20 mb-20">
+  <SectionHeader id="write" n={3} title="Write" />
+  <Grid cols={1} class="[&_.row]:border-r [&_.row]:items-start">
+    {posts.map((p, i) => (
+      <Row n={i + 1} href={p.data.url ?? `/blog/${p.id}`} external={!!p.data.url}>
+        <div class="flex flex-col items-start gap-3 sm:flex-row sm:gap-4">
+          {thumb(p.data.image) && (
+            <Image
+              src={thumb(p.data.image)!}
+              alt=""
+              widths={[192, 384, 640, 960]}
+              sizes="(min-width: 640px) 192px, 100vw"
+              class="aspect-video w-full shrink-0 object-cover sm:w-48"
+            />
+          )}
+          <div class="min-w-0">
+            <span class="block font-bold">{p.data.title}</span>
+            <span class="block text-sm text-dim">{p.data.summary}</span>
+            {p.data.excerpt && (
+              <span class="mt-2 line-clamp-4 text-sm text-dim sm:line-clamp-3">{p.data.excerpt}</span>
+            )}
+            {/* phones: the date goes under the summary so the text gets the full width */}
+            <span class="label mt-2 block sm:hidden">{p.data.date.toISOString().slice(0, 10)}</span>
+          </div>
+        </div>
+        <span slot="meta" class="hidden sm:inline">{p.data.date.toISOString().slice(0, 10)}</span>
+      </Row>
+    ))}
+  </Grid>
+</section>

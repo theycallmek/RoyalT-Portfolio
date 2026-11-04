@@ -1,0 +1,20 @@
+---
+import type { CollectionEntry } from "astro:content";
+import Grid from "./Grid.astro";
+import Row from "./Row.astro";
+
+interface Props { items: CollectionEntry<"links">[]; label: string }
+const { label } = Astro.props;
+const items = [...Astro.props.items].sort((a, b) => a.data.order - b.data.order);
+---
+{items.length > 0 && (
+  <Grid cols={1} label={label} class="[&_.row]:border-r">
+    {/* Rows draw only a bottom rule; inside a ruled Grid they also need the right edge */}
+    {items.map((l, i) => (
+      <Row n={i + 1} href={l.data.url} external>
+        <span class="block font-bold">{l.data.title}</span>
+        {l.data.description && <span class="block text-sm text-dim">{l.data.description}</span>}
+      </Row>
+    ))}
+  </Grid>
+)}

@@ -1,0 +1,21 @@
+node_modules
+dist
+.astro
+test-results
+playwright-report
+graphify-out
+.claude
+
+server/data/
+.superpowers/
+
+# local secrets (never commit)
+.env
+.env.*
+!.env.example
+
+# MakerWorld page samples saved for building the extractor
+makerworld-sample*.html
+
+# Private working notes (handoff, plans, specs): kept locally, never pushed
+docs/superpowers/

@@ -1,0 +1,17 @@
+node_modules
+dist
+.astro
+.git
+.github
+.vscode
+.claude
+.superpowers
+graphify-out
+test-results
+playwright-report
+docs
+server/data
+makerworld-sample*.html
+.env
+.env.*
+!.env.example

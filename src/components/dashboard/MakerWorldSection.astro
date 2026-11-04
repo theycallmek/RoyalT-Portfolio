@@ -1,0 +1,46 @@
+---
+import type { ImageMetadata } from "astro";
+import { getImage } from "astro:assets";
+import raw from "../../data/makerworld.json";
+import { makerworldSchema } from "../../lib/schemas";
+import Grid from "../ui/Grid.astro";
+import Cell from "../ui/Cell.astro";
+import StatCell from "../ui/StatCell.astro";
+import MakerWorldCards, { type Model } from "./MakerWorldCards";
+
+const mw = makerworldSchema.parse(raw);
+const empty = mw.models === 0 && mw.items.length === 0;
+const fmt = new Intl.NumberFormat("en").format;
+// covers written by scripts/makerworld-import.ts
+const covers = import.meta.glob<{ default: ImageMetadata }>("../../assets/makerworld/*.webp", { eager: true });
+const cover = (file?: string) => (file ? covers[`../../assets/makerworld/${file}`]?.default : undefined);
+
+// Optimise here (the island cannot use astro:assets) and hand it plain src/srcset/size.
+const items: Model[] = await Promise.all(
+  mw.items.map(async ({ title, url, downloads, likes, prints, published, image }) => {
+    const src = cover(image);
+    if (!src) return { title, url, downloads, likes, prints, published };
+    const img = await getImage({ src, widths: [320, 480, 640, 960], format: "webp" });
+    return {
+      title, url, downloads, likes, prints, published,
+      img: { src: img.src, srcset: img.srcSet.attribute, width: Number(img.attributes.width), height: Number(img.attributes.height) },
+    };
+  }),
+);
+---
+<Grid cols={3}>
+  {empty ? (
+    <Cell span={3}>
+      <p>stats not filled in yet</p>
+      <a class="mt-2 inline-block text-accent underline" href={mw.profileUrl} rel="noopener noreferrer" target="_blank">makerworld.com/@RoyalT<span class="sr-only"> (opens in new tab)</span></a>
+    </Cell>
+  ) : (
+    <>
+      <StatCell label="Models" value={fmt(mw.models)} />
+      <StatCell label="Downloads" value={fmt(mw.downloads)} />
+      <StatCell label="Likes" value={fmt(mw.likes)} />
+    </>
+  )}
+  <Cell span={3}><p class="label">manually updated {mw.updated}</p></Cell>
+</Grid>
+{items.length > 0 && <MakerWorldCards client:visible items={items} />}

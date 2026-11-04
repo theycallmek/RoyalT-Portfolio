@@ -1,0 +1,110 @@
+---
+import { ClientRouter } from "astro:transitions";
+import "../styles/global.css";
+import Nav from "../components/Nav.astro";
+import ThemeControls from "../components/islands/ThemeControls";
+// Preload the two Commit Mono files so text is drawn in the final font (no swap-induced layout shift).
+import mono400 from "@fontsource/commit-mono/files/commit-mono-latin-400-normal.woff2?url";
+import mono700 from "@fontsource/commit-mono/files/commit-mono-latin-700-normal.woff2?url";
+
+interface Props { title: string; description?: string; path?: string }
+const { title, description = "Web developer portfolio.", path = Astro.url.pathname } = Astro.props;
+const canonical = new URL(path, Astro.site);
+const ogImage = new URL("/og.png", Astro.site);
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "RoyalT",
+  jobTitle: "Web Developer",
+  url: Astro.site?.toString(),
+};
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <script is:inline>
+      // Keep in sync with src/lib/theme.ts (inline scripts cannot import). Runs before paint;
+      // re-applied after each View Transition swap, which resets <html> attributes.
+      (() => {
+        const A = ["green", "orange", "blue", "pink"];
+        const apply = (root) => {
+          const saved = localStorage.getItem("mode");
+          const sys = matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+          root.dataset.mode = saved === "light" || saved === "dark" ? saved : sys;
+          const a = localStorage.getItem("accent");
+          root.dataset.accent = A.includes(a) ? a : "green";
+        };
+        apply(document.documentElement);
+        document.addEventListener("astro:after-swap", () => apply(document.documentElement));
+        matchMedia("(prefers-color-scheme: light)").addEventListener("change", () => {
+          if (!localStorage.getItem("mode")) apply(document.documentElement);
+        });
+      })();
+    </script>
+    <link rel="preload" as="font" type="font/woff2" href={mono400} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={mono700} crossorigin />
+    <ClientRouter />
+  </head>
+  <body>
+    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:p-2 focus:bg-bg">Skip to content</a>
+    <Nav><ThemeControls client:idle transition:persist /></Nav>
+    <main id="main" class="relative z-10 mx-auto max-w-6xl px-6 py-12">
+      <slot />
+    </main>
+    <footer class="border-t border-rule">
+      <div class="label mx-auto flex max-w-6xl justify-between px-6 py-4">
+        <span>© RoyalT</span>
+        <span>built with Astro</span>
+      </div>
+    </footer>
+    <script>
+      // Touch devices: mark only the linked row nearest the middle of the screen (see a.row.is-centered).
+      function initCenteredRow() {
+        if (!matchMedia("(hover: none)").matches) return;
+        let current: Element | null = null;
+        let frame = 0;
+        const update = () => {
+          frame = 0;
+          const mid = innerHeight / 2;
+          let best: Element | null = null;
+          let bestDist = innerHeight * 0.25; // ignore rows far from the middle
+          for (const row of document.querySelectorAll("a.row")) {
+            const r = row.getBoundingClientRect();
+            const dist = Math.abs(r.top + r.height / 2 - mid);
+            if (dist < bestDist) {
+              bestDist = dist;
+              best = row;
+            }
+          }
+          if (best === current) return;
+          current?.classList.remove("is-centered");
+          best?.classList.add("is-centered");
+          current = best;
+        };
+        const onScroll = () => {
+          frame ||= requestAnimationFrame(update);
+        };
+        addEventListener("scroll", onScroll, { passive: true });
+        update();
+        document.addEventListener("astro:before-swap", () => removeEventListener("scroll", onScroll), { once: true });
+      }
+      document.addEventListener("astro:page-load", initCenteredRow);
+    </script>
+    <script is:inline>
+      // Skip the scroll fade-in for anything already (partly) on screen when the page loads.
+      for (const el of document.querySelectorAll(".reveal"))
+        if (el.getBoundingClientRect().top < innerHeight) el.classList.add("no-reveal");
+    </script>
+  </body>
+</html>

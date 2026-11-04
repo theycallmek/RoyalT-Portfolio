@@ -1,0 +1,9 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageHeader from "../components/ui/PageHeader.astro";
+---
+<BaseLayout title="404 — command not found">
+  <PageHeader path={Astro.url.pathname} title="404" cursor />
+  <p>bash: command not found</p>
+  <p class="mt-4"><a class="text-accent underline" href="/">cd ~</a></p>
+</BaseLayout>

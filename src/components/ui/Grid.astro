@@ -1,0 +1,11 @@
+---
+interface Props { cols?: 1 | 2 | 3 | 4 | "cards"; class?: string; label?: string }
+const { cols = 3, class: cls, label } = Astro.props;
+const colClass = { 1: "", 2: "sm:grid-cols-2", 3: "sm:grid-cols-3", 4: "sm:grid-cols-2 lg:grid-cols-4", cards: "sm:grid-cols-2 lg:grid-cols-3" }[cols];
+---
+<section class:list={["reveal mb-10", cls]} aria-label={label}>
+  {label && <h4 class="label mb-2">{label}</h4>}
+  <div class:list={["grid grid-cols-1 border-l border-t border-rule", colClass]}>
+    <slot />
+  </div>
+</section>

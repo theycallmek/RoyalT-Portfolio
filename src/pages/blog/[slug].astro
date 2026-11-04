@@ -1,0 +1,24 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Cell from "../../components/ui/Cell.astro";
+import Grid from "../../components/ui/Grid.astro";
+import PageHeader from "../../components/ui/PageHeader.astro";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("posts", (p) => !p.data.draft && !p.data.url);
+  return posts.map((p) => ({ params: { slug: p.id }, props: { post: p } }));
+}
+const { post } = Astro.props;
+const { Content } = await render(post);
+const { title, summary, date, tags } = post.data;
+---
+<BaseLayout title={`${title} — RoyalT`} description={summary}>
+  <PageHeader path={`~/blog/${post.id}`} title={title} intro={summary} />
+  <Grid cols={3}>
+    <Cell><p class="label">date</p><p class="mt-1">{date.toISOString().slice(0, 10)}</p></Cell>
+    <Cell><p class="label">tags</p><p class="mt-1">{tags.join(" · ") || "—"}</p></Cell>
+    <Cell><p class="label">links</p><p class="mt-1"><a class="text-accent underline" href="/#write">← back</a></p></Cell>
+  </Grid>
+  <div class="max-w-[70ch] leading-relaxed [&_p]:mb-4 [&_a]:text-accent [&_a]:underline"><Content /></div>
+</BaseLayout>

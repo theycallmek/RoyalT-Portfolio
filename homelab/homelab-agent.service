@@ -1,0 +1,15 @@
+[Unit]
+Description=Homelab stats agent (one report to the portfolio stats service)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+# Root-owned, mode 600; systemd reads it before dropping to the dynamic user.
+EnvironmentFile=/etc/homelab-agent.env
+ExecStart=/usr/local/lib/homelab-agent/agent.sh
+DynamicUser=yes
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes

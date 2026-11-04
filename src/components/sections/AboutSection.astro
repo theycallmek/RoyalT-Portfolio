@@ -1,0 +1,22 @@
+---
+import { getCollection } from "astro:content";
+import { LINK_CATEGORIES } from "../../lib/schemas";
+import Cell from "../ui/Cell.astro";
+import Grid from "../ui/Grid.astro";
+import LinkRows from "../ui/LinkRows.astro";
+import SectionHeader from "../ui/SectionHeader.astro";
+import SubHeader from "../ui/SubHeader.astro";
+
+const skills = ["Mobile app automation", "Web development", "Embedded IoT systems", "3D CAD", "Visual content creation"];
+const links = await getCollection("links");
+---
+<section id="about" aria-labelledby="about-title" class="scroll-mt-20 mb-20">
+  <SectionHeader id="about" n={4} title="About" />
+  <SubHeader id="skills" title="Skills" />
+  <Grid cols={4}>
+    {/* 5 skills in a 4-col grid: the last one fills its row so the ruled grid stays closed */}
+    {skills.map((s, i) => <Cell span={i === skills.length - 1 && skills.length % 4 === 1 ? 4 : 1}>{s}</Cell>)}
+  </Grid>
+  <SubHeader id="elsewhere" title="Elsewhere" />
+  {LINK_CATEGORIES.map((c) => <LinkRows items={links.filter((l) => l.data.category === c)} label={c} />)}
+</section>

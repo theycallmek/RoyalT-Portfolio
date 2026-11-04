@@ -1,0 +1,6 @@
+---
+interface Props { span?: 1 | 2 | 3 | 4; class?: string }
+const { span = 1, class: cls } = Astro.props;
+const spanClass = { 1: "", 2: "sm:col-span-2", 3: "sm:col-span-3", 4: "sm:col-span-2 lg:col-span-4" }[span];
+---
+<div class:list={["border-b border-r border-rule p-4", spanClass, cls]}><slot /></div>

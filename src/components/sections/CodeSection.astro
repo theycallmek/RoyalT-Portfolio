@@ -1,0 +1,22 @@
+---
+import { getCollection } from "astro:content";
+import GitHubSections from "../dashboard/GitHubSections";
+import HomelabSection from "../dashboard/HomelabSection";
+import LinkRows from "../ui/LinkRows.astro";
+import SectionHeader from "../ui/SectionHeader.astro";
+import SubHeader from "../ui/SubHeader.astro";
+
+const codeLinks = await getCollection("links", (l) => l.data.category === "code");
+---
+<section id="code" aria-labelledby="code-title" class="scroll-mt-20 mb-20">
+  <SectionHeader id="code" n={1} title="Code" />
+  <section id="github" aria-labelledby="github-title" class="scroll-mt-20">
+    <SubHeader id="github" title="GitHub" />
+    <GitHubSections client:load profileUrl="https://github.com/theycallmek" />
+    <LinkRows items={codeLinks} label="Profile" />
+  </section>
+  <section id="homelab" aria-labelledby="homelab-title" class="scroll-mt-20">
+    <SubHeader id="homelab" title="Homelab" />
+    <HomelabSection client:load />
+  </section>
+</section>

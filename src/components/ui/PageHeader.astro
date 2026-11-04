@@ -1,0 +1,13 @@
+---
+interface Props { path: string; title: string; intro?: string; cursor?: boolean }
+const { path, title, intro, cursor = false } = Astro.props;
+---
+<header class="mb-10">
+  <p class="label mb-3">{path}</p>
+  <slot name="title">
+    <h1 class="display text-5xl sm:text-7xl">{title}{cursor && <span class="cursor" aria-hidden="true">_</span>}</h1>
+  </slot>
+  <slot name="intro">
+    {intro && <p class="mt-4 max-w-prose text-dim">{intro}</p>}
+  </slot>
+</header>

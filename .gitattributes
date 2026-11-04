@@ -1,0 +1,2 @@
+# Shell scripts and units run on Linux: keep LF even when checked out on Windows (core.autocrlf).
+homelab/** text eol=lf

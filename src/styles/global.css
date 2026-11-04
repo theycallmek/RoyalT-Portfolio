@@ -1,0 +1,106 @@
+@import "tailwindcss";
+@import "@fontsource/commit-mono/400.css";
+@import "@fontsource/commit-mono/700.css";
+
+@theme {
+  --font-mono: "Commit Mono", ui-monospace, monospace;
+  --color-bg: var(--bg);
+  --color-fg: var(--fg);
+  --color-dim: var(--dim);
+  --color-rule: var(--rule);
+  --color-accent: var(--accent);
+}
+
+:root, :root[data-mode="dark"] {
+  color-scheme: dark;
+  --bg: #000; --fg: #ededed; --dim: #8a8a8a; --rule: #333;
+  --a-green: #22c55e; --a-orange: #f97316; --a-blue: #60a5fa; --a-pink: #e879f9;
+}
+:root[data-mode="light"] {
+  --palette-text-dl: -0.06;
+  color-scheme: light;
+  --bg: #f5f5f0; --fg: #111; --dim: #5c5c5c; --rule: #cfcfc8;
+  --a-green: #15803d; --a-orange: #c2410c; --a-blue: #1d4ed8; --a-pink: #a21caf;
+}
+:root, :root[data-accent="green"] { --accent: var(--a-green); }
+:root[data-accent="orange"] { --accent: var(--a-orange); }
+:root[data-accent="blue"] { --accent: var(--a-blue); }
+:root[data-accent="pink"] { --accent: var(--a-pink); }
+
+html { background: var(--bg); scroll-behavior: smooth; }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--font-mono); font-variant-numeric: tabular-nums;
+  min-height: 100dvh;
+}
+::selection { background: var(--accent); color: var(--bg); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* in a layer so Tailwind utilities (e.g. text-accent on a .label) can override */
+@layer components {
+  .label { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); }
+  .display { font-weight: 700; text-transform: uppercase; line-height: 0.95; letter-spacing: -0.03em; }
+  .cursor { color: var(--accent); animation: blink 1.1s steps(1) infinite; }
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* no-preference only: the reduced-motion duration override below does not stop scroll-driven animations */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    /* longhands: the build minifier folds a shorthand + animation-timeline into one shorthand Chromium rejects */
+    .reveal { animation-name: reveal; animation-timing-function: linear; animation-fill-mode: both; animation-timeline: view(); animation-range: entry 0% entry 40%; }
+    @keyframes reveal { from { opacity: 0; transform: translateY(12px); } }
+    /* already on screen at load: show at full strength (no half-faded text above the fold) */
+    .reveal.no-reveal { animation-name: none; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important; animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important; scroll-behavior: auto !important;
+  }
+}
+
+/* Unlayered on purpose so it is not overridden by Tailwind utilities on rows. */
+/* Accent underline: a 2px accent line grows left-to-right along the bottom of linked rows on hover/focus. */
+a.row {
+  background: linear-gradient(var(--accent), var(--accent)) no-repeat left bottom / 0% 2px;
+  transition: background-size 200ms ease-out;
+}
+a.row:hover, a.row:focus-visible { background-size: 100% 2px; }
+a.row:focus-visible { outline-offset: -2px; outline-color: var(--accent); }
+
+/* Touch devices have no hover: the one linked row nearest the viewport centre gets the line
+   (class set by the script in BaseLayout), and a tapped row shows it immediately. */
+@media (hover: none) {
+  a.row.is-centered { background-size: 100% 2px; }
+  a.row:active { background-size: 100% 2px; transition-duration: 0ms; }
+}
+
+/* Nav link strip: fade an edge only when more links are hidden beyond it. The strip's own
+   scroll position drives the fade widths; with nothing to scroll the timeline is inactive and
+   both widths stay 0. Longhands on purpose: the minifier merges a shorthand that drops the timeline. */
+@property --fade-l { syntax: "<length>"; inherits: false; initial-value: 0px; }
+@property --fade-r { syntax: "<length>"; inherits: false; initial-value: 0px; }
+#nav-strip {
+  mask-image: linear-gradient(to right, transparent, #000 var(--fade-l), #000 calc(100% - var(--fade-r)), transparent);
+}
+@supports (animation-timeline: scroll()) {
+  #nav-strip {
+    animation-name: strip-fade;
+    animation-duration: auto;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: scroll(self inline);
+  }
+  @keyframes strip-fade {
+    0% { --fade-l: 0px; --fade-r: 28px; }
+    8%, 92% { --fade-l: 28px; --fade-r: 28px; }
+    100% { --fade-l: 28px; --fade-r: 0px; }
+  }
+}
+
+/* Theme-specific images (e.g. brand icons): dark is the default when no mode is set. */
+:root[data-mode="light"] .only-dark { display: none; }
+:root:not([data-mode="light"]) .only-light { display: none; }

@@ -1,0 +1,63 @@
+---
+const ids = ["code", "make", "write", "about"];
+---
+<header class="sticky top-0 z-20 border-b border-rule bg-bg">
+  <div class="mx-auto flex h-14 max-w-6xl flex-nowrap items-center gap-4 px-6">
+    <a href="/#top" class="label shrink-0 font-bold text-fg hover:text-accent">ROYALT<span class="text-accent">_</span></a>
+    <nav aria-label="Main" class="min-w-0 flex-1">
+      <ul id="nav-strip" class="flex min-w-0 gap-5 overflow-x-auto whitespace-nowrap [scrollbar-width:none]">
+        {ids.map((id) => (
+          <li><a href={`/#${id}`} data-spy={id} class="label hover:text-accent">{id}</a></li>
+        ))}
+      </ul>
+    </nav>
+    <div class="shrink-0" id="nav-controls"><slot /></div>
+  </div>
+</header>
+
+<script>
+  function activate(id: string) {
+    const strip = document.getElementById("nav-strip");
+    if (!strip) return;
+    for (const a of strip.querySelectorAll<HTMLAnchorElement>("a[data-spy]")) {
+      const on = a.dataset.spy === id;
+      a.classList.toggle("text-accent", on);
+      if (on) a.setAttribute("aria-current", "true");
+      else a.removeAttribute("aria-current");
+      if (!on) continue;
+      // scroll the strip only (scrollIntoView could also scroll the page)
+      const l = a.getBoundingClientRect();
+      const s = strip.getBoundingClientRect();
+      if (l.left < s.left) strip.scrollLeft += l.left - s.left;
+      else if (l.right > s.right) strip.scrollLeft += l.right - s.right;
+    }
+  }
+
+  // Scroll position, not an IntersectionObserver band: sections can be short (write ~140px), so a
+  // mid-viewport band highlights the next section after an anchor jump, and the last sections
+  // never reach it. Top-level sections only. Active = last section whose top is under the nav; the last one at page end.
+  let sections: Element[] = [];
+  let frame = 0;
+  function update() {
+    frame = 0;
+    const root = document.documentElement;
+    const atEnd = innerHeight + scrollY >= root.scrollHeight - 2;
+    const cur = atEnd ? sections.at(-1) : sections.findLast((s) => s.getBoundingClientRect().top <= 120);
+    activate(cur?.id ?? "top"); // "top" (the hero) clears the highlight
+  }
+  function onScroll() {
+    frame ||= requestAnimationFrame(update);
+  }
+
+  document.addEventListener("astro:page-load", () => {
+    removeEventListener("scroll", onScroll);
+    if (location.pathname !== "/") return;
+    sections = [...document.querySelectorAll("#top, main > section[id]")];
+    addEventListener("scroll", onScroll, { passive: true });
+    update();
+  });
+  document.addEventListener("astro:before-swap", () => {
+    removeEventListener("scroll", onScroll);
+    sections = [];
+  });
+</script>

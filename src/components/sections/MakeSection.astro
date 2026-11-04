@@ -1,0 +1,22 @@
+---
+import { getCollection } from "astro:content";
+import MakerWorldSection from "../dashboard/MakerWorldSection.astro";
+import YouTubeSection from "../dashboard/YouTubeSection";
+import LinkRows from "../ui/LinkRows.astro";
+import SectionHeader from "../ui/SectionHeader.astro";
+import SubHeader from "../ui/SubHeader.astro";
+
+const links = await getCollection("links");
+---
+<section id="make" aria-labelledby="make-title" class="scroll-mt-20 mb-20">
+  <SectionHeader id="make" n={2} title="Make" />
+  <section id="youtube" aria-labelledby="youtube-title" class="scroll-mt-20">
+    <SubHeader id="youtube" title="Video" source="YouTube" />
+    <YouTubeSection client:load />
+    <LinkRows items={links.filter((l) => l.id === "youtube")} label="Channel" />
+  </section>
+  <section id="makerworld" aria-labelledby="makerworld-title" class="scroll-mt-20">
+    <SubHeader id="makerworld" title="3D printing" source="MakerWorld" />
+    <MakerWorldSection />
+  </section>
+</section>

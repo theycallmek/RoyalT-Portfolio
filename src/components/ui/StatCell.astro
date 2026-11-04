@@ -1,0 +1,7 @@
+---
+import Cell from "./Cell.astro";
+import MetricIcon from "./MetricIcon";
+interface Props { label: string; value: string | number }
+const { label, value } = Astro.props;
+---
+<Cell><p class="label">{label}</p><p class="mt-1 flex items-center gap-2 text-4xl font-bold sm:gap-3"><MetricIcon label={label} />{value}</p></Cell>

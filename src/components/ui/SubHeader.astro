@@ -1,0 +1,5 @@
+---
+interface Props { id: string; title: string; source?: string }
+const { id, title, source } = Astro.props;
+---
+<h3 id={`${id}-title`} class="display mb-4 text-xl sm:text-2xl">{title}{source && <span class="label ml-3 align-middle">/ {source}</span>}</h3>

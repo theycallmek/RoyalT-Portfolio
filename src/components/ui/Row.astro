@@ -1,0 +1,17 @@
+---
+interface Props { n?: number; href?: string; external?: boolean }
+const { n, href, external = false } = Astro.props;
+const Tag = href ? "a" : "div";
+const num = n === undefined ? null : String(n).padStart(2, "0");
+---
+<Tag
+  href={href}
+  rel={external ? "noopener noreferrer" : undefined}
+  target={external ? "_blank" : undefined}
+  class="row flex items-baseline gap-4 border-b border-rule px-4 py-3"
+>
+  {num && <span class="label w-6 shrink-0">{num}</span>}
+  <div class="min-w-0 flex-1"><slot /></div>
+  <span class="label max-w-[40%] text-right sm:max-w-none sm:shrink-0"><slot name="meta" /></span>
+  {external && <span class="sr-only"> (opens in new tab)</span>}
+</Tag>
