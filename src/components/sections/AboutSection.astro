@@ -4,6 +4,7 @@ import { LINK_CATEGORIES } from "../../lib/schemas";
 import Cell from "../ui/Cell.astro";
 import Grid from "../ui/Grid.astro";
 import LinkRows from "../ui/LinkRows.astro";
+import MetricIcon from "../ui/MetricIcon";
 import SectionHeader from "../ui/SectionHeader.astro";
 import SubHeader from "../ui/SubHeader.astro";
 
@@ -30,7 +31,7 @@ const tech = [
   <Grid cols={1}>
     {tech.map(([area, tools]) => (
       <Cell class="flex flex-col gap-1 sm:flex-row sm:gap-6">
-        <span class="label w-44 shrink-0 pt-0.5">{area}</span>
+        <span class="label flex w-44 shrink-0 items-center gap-2 self-start pt-1"><span class="text-xl leading-none"><MetricIcon label={area} /></span>{area}</span>
         <span>{tools}</span>
       </Cell>
     ))}
