@@ -7,7 +7,6 @@ import LinkRows from "../ui/LinkRows.astro";
 import SectionHeader from "../ui/SectionHeader.astro";
 import SubHeader from "../ui/SubHeader.astro";
 
-const skills = ["Mobile app automation", "Web development", "Embedded IoT systems", "3D CAD", "Visual content creation"];
 const links = await getCollection("links");
 const tech = [
   ["Software", "Python and Lua for automation, tools and Discord bots; web apps with TypeScript, React, Astro, PHP, HTML and CSS"],
@@ -45,11 +44,6 @@ const tech = [
     </p>
     <p>When I'm not at a keyboard, I'm usually designing and printing something new, or recording it for YouTube.</p>
   </div>
-  <SubHeader id="skills" title="Skills" />
-  <Grid cols={4}>
-    {/* 5 skills in a 4-col grid: the last one fills its row so the ruled grid stays closed */}
-    {skills.map((s, i) => <Cell span={i === skills.length - 1 && skills.length % 4 === 1 ? 4 : 1}>{s}</Cell>)}
-  </Grid>
   <SubHeader id="elsewhere" title="Elsewhere" />
   {LINK_CATEGORIES.map((c) => <LinkRows items={links.filter((l) => l.data.category === c)} label={c} />)}
 </section>
