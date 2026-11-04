@@ -17,6 +17,13 @@
     reverse_proxy stats:8787
   }
 
+  # GoatCounter: only the counter is public; its dashboard is published on the Tailscale IP only
+  # (docker-compose.yml). It reads the visitor IP from CF-Connecting-IP / X-Forwarded-For.
+  @goatcounter path /count /count.js
+  handle @goatcounter {
+    reverse_proxy goatcounter:8080
+  }
+
   handle {
     root * /srv
     @assets path /_astro/*

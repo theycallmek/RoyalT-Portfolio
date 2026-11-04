@@ -19,7 +19,14 @@ services:
     # Localhost only: Tailscale Funnel (backup address) publishes it; the Cloudflare tunnel reaches
     # it over the compose network as http://web:80.
     ports: ["127.0.0.1:${WEB_PORT:-8080}:80"]
-    depends_on: [stats]
+    depends_on: [stats, goatcounter]
+    restart: unless-stopped
+  # Private analytics. Caddy proxies only /count and /count.js to it; the dashboard is published on
+  # INGEST_BIND (the Tailscale IP), so only tailnet devices can open it: http://<tailscale-ip>:8081
+  goatcounter:
+    image: arp242/goatcounter:2.7.0
+    ports: ["${INGEST_BIND:-127.0.0.1}:8081:8080"]
+    volumes: [goatcounter-data:/home/goatcounter/goatcounter-data]
     restart: unless-stopped
   # Cloudflare Tunnel for the public domain: outbound-only connection, no published ports.
   # Enabled with COMPOSE_PROFILES=tunnel and CLOUDFLARE_TUNNEL_TOKEN in .env (docs/DEPLOY.md).
@@ -33,3 +40,4 @@ services:
     profiles: [tunnel]
 volumes:
   stats-data:
+  goatcounter-data:
