@@ -10,7 +10,7 @@
     "run_worker_first": ["/api/*"]
   },
   "d1_databases": [
-    { "binding": "DB", "database_name": "royalt-stats", "database_id": "REPLACE_WITH_D1_DATABASE_ID" }
+    { "binding": "DB", "database_name": "royalt-stats", "database_id": "7bf24264-b6c0-407f-9cf9-8c9d0f73ba9e" }
   ],
   "workers_dev": true,
   "preview_urls": false,
