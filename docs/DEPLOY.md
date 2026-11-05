@@ -230,5 +230,5 @@ One-time setup:
 4. **GitHub secrets** (repo → Settings → Secrets and variables → Actions): `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` (dashboard → Workers & Pages, right column), `STATS_PUSH_TOKEN` (step 3).
 5. **Server `.env`:** `STATS_PUSH_URL=https://royalt-online.<your-subdomain>.workers.dev/api/stats` and `STATS_PUSH_TOKEN=` (step 3), then `sudo docker compose up -d --build`.
 6. **Tunnel:** add the public hostname `count.royalt.online` → `http://web:80`.
-7. **Cutover:** in the tunnel, delete the `royalt.online` public hostname; then Workers & Pages → `royalt-online` → Settings → Domains & Routes → Add → Custom domain `royalt.online`.
+7. **Cutover:** in the tunnel (Routes), delete the `royalt.online` route; then Workers & Pages → `royalt-online` → Domains → Add → `royalt.online`, Production. (`wrangler.jsonc` lists it too, so deploys keep it.)
 8. **www:** Rules → Redirect Rules → template "Redirect from WWW to root" (301, keep the query string), so www works during an outage too.

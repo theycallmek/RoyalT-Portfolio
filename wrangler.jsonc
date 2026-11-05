@@ -12,6 +12,7 @@
   "d1_databases": [
     { "binding": "DB", "database_name": "royalt-stats", "database_id": "7bf24264-b6c0-407f-9cf9-8c9d0f73ba9e" }
   ],
+  "routes": [{ "pattern": "royalt.online", "custom_domain": true }],
   "workers_dev": true,
   "preview_urls": false,
   "observability": { "enabled": true }
