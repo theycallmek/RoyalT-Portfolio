@@ -110,7 +110,7 @@ MakerWorld blocks automated browsers, so this happens on a dev machine with a no
 1. Open https://makerworld.com/en/@RoyalT/upload, save it (Ctrl+S, "Webpage, HTML Only") as `makerworld-sample.html` in the repo root.
 2. `npm run makerworld:import`
 3. Commit `src/data/makerworld.json` and `src/assets/makerworld/`.
-4. On the server: step 7 (pull or copy, then `docker compose up -d --build`).
+4. Push to `main`: CI deploys royalt.online (section 13). For the home copy, step 7 on the server.
 
 ## 9. Homelab stats (optional)
 
