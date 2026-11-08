@@ -1,5 +1,9 @@
 ---
+import { Image } from "astro:assets";
 import { getCollection } from "astro:content";
+import bear from "../../assets/cats/bear1.jpg";
+import bearAndTeddy from "../../assets/cats/bear_and_teddy1.jpg";
+import teddy from "../../assets/cats/teddy1.jpg";
 import { LINK_CATEGORIES } from "../../lib/schemas";
 import Cell from "../ui/Cell.astro";
 import Grid from "../ui/Grid.astro";
@@ -16,6 +20,11 @@ const tech = [
   ["3D design", "Models designed in Fusion 360, then printed on my Bambu Lab P1S, and published on MakerWorld"],
   ["Infrastructure", "Linux servers, Docker, OpenWrt, Tailscale, and Cloudflare. They run this site and the live stats above."],
 ];
+const cats = [
+  [bear, "Bear", "Bear, one of my cats"],
+  [teddy, "Teddy", "Teddy, one of my cats"],
+  [bearAndTeddy, "Bear (left) and Teddy (right)", "My cats Bear and Teddy together"],
+] as const;
 ---
 <section id="about" aria-labelledby="about-title" class="scroll-mt-20 mb-20">
   <SectionHeader id="about" n={4} title="About" />
@@ -46,6 +55,14 @@ const tech = [
       When I am not at my keyboard, I am usually 3D printing, designing LED art, writing, or playing with my
       two cats, Bear and Teddy.
     </p>
+    <div class="grid grid-cols-1 items-start gap-4 sm:grid-cols-3">
+      {cats.map(([src, caption, alt]) => (
+        <figure>
+          <Image src={src} alt={alt} widths={[320, 480, 700]} sizes="(min-width: 640px) 220px, 100vw" class="w-full" />
+          <figcaption class="mt-2 text-sm text-dim">{caption}</figcaption>
+        </figure>
+      ))}
+    </div>
   </div>
   <SubHeader id="elsewhere" title="Elsewhere" />
   {LINK_CATEGORIES.map((c) => <LinkRows items={links.filter((l) => l.data.category === c)} label={c} />)}
