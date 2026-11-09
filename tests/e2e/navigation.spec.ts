@@ -28,6 +28,9 @@ test("external posts link out in a new tab", async ({ page }) => {
   await expect(page.locator("#write")).toContainText(
     "Hugh Ross presents himself as a bridge between faith and science.",
   );
+  await expect(
+    page.locator("#write").getByRole("link", { name: /The Case Reopened/ }),
+  ).toHaveAttribute("href", "https://thecasereopened.collie-truck.ts.net");
 });
 
 test("page is grouped into code, make, write, about with subsections inside", async ({
